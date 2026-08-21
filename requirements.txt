@@ -1,0 +1,10 @@
+torch>=2.4
+transformers>=5.0
+peft>=0.20
+trl>=1.9
+bitsandbytes
+accelerate
+datasets
+pytest
+pytest-cov
+numpy

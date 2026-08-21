@@ -1,0 +1,44 @@
+{
+  "note": "r=16 trained 3 epochs w/ best-checkpoint (epoch 2); r=8 and r=32 trained 1 epoch",
+  "configs": [
+    {
+      "config": "base",
+      "params": 0,
+      "val_loss": null,
+      "valid_python": 39,
+      "pass1": 33
+    },
+    {
+      "config": "r=8",
+      "params": 4587520,
+      "val_loss": 0.4795,
+      "valid_python": 40,
+      "pass1": 33,
+      "minutes": 40.6,
+      "peak_gb": 4.18
+    },
+    {
+      "config": "r=16",
+      "params": 9175040,
+      "val_loss": 0.4753,
+      "valid_python": 40,
+      "pass1": 36,
+      "minutes": 40.0,
+      "peak_gb": 4.17
+    },
+    {
+      "config": "r=32",
+      "params": 18350080,
+      "val_loss": 0.4739,
+      "valid_python": 40,
+      "pass1": 33,
+      "minutes": 40.0,
+      "peak_gb": 4.26
+    }
+  ],
+  "findings": [
+    "4x parameters (r=8 to r=32) bought 1.2% lower val loss - capacity not the constraint",
+    "All ranks reached 100% valid Python; pass@1 varied 3/40, within noise at n=40",
+    "Base scored 97.5% valid Python when the instruction specified a Python signature, vs 57.5% free-form - the signature itself is a strong language cue"
+  ]
+}

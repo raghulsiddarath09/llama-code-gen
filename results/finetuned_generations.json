@@ -1,0 +1,27 @@
+{
+  "Write a function to reverse a string": {
+    "output": "def reverse_string(string):\n    return string[::-1]",
+    "stopped_on_eos": true,
+    "valid_python": true
+  },
+  "Implement binary search on a sorted list": {
+    "output": "def binary_search(arr, target):\n    low = 0\n    high = len(arr) - 1\n\n    while low <= high:\n        mid = (low + high) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            low = mid + 1\n        else:\n            high = mid - 1\n    return -1",
+    "stopped_on_eos": true,
+    "valid_python": true
+  },
+  "Write a function to count word frequency in a string": {
+    "output": "def count_words(string):\n    words = string.split()\n    word_freq = {}\n    for word in words:\n        if word in word_freq:\n            word_freq[word] += 1\n        else:\n            word_freq[word] = 1\n    return word_freq",
+    "stopped_on_eos": true,
+    "valid_python": true
+  },
+  "Create a function that flattens a nested list": {
+    "output": "def flatten_list(nested_list):\n    flat_list = []\n    for item in nested_list:\n        if isinstance(item, list):\n            flat_list.extend(flatten_list(item))\n        else:\n            flat_list.append(item)\n    return flat_list",
+    "stopped_on_eos": true,
+    "valid_python": true
+  },
+  "Write a decorator that measures execution time": {
+    "output": "import time\n\ndef timeit(func):\n    def wrapper(*args, **kwargs):\n        start = time.time()\n        result = func(*args, **kwargs)\n        end = time.time()\n        print(\"Execution time: {} seconds\".format(end-start))\n        return result\n    return wrapper",
+    "stopped_on_eos": true,
+    "valid_python": true
+  }
+}

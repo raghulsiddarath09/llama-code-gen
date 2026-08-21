@@ -1,0 +1,24 @@
+{
+  "n": 40,
+  "python_validity": {
+    "base": 23,
+    "ft": 40
+  },
+  "language_correct": {
+    "base": 25,
+    "ft": 40
+  },
+  "pass1_freeform": {
+    "base": 14,
+    "ft": 20
+  },
+  "pass1_specified_signature": {
+    "base": 33,
+    "ft": 36
+  },
+  "base_failure_breakdown": {
+    "wrong_language": 15,
+    "fence_only": 2
+  },
+  "naming_confound_note": "17/20 freeform failures were NameError, not logic errors"
+}

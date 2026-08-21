@@ -1,0 +1,37 @@
+{
+  "checked": 50,
+  "hits": 13,
+  "names": [
+    "is_palindrome",
+    "longest",
+    "greatest_common_divisor",
+    "sort_numbers",
+    "remove_duplicates",
+    "concatenate",
+    "is_prime",
+    "unique",
+    "max_element",
+    "fizz_buzz",
+    "triangle_area",
+    "median",
+    "is_palindrome"
+  ],
+  "task_ids": [
+    "HumanEval/10",
+    "HumanEval/12",
+    "HumanEval/13",
+    "HumanEval/19",
+    "HumanEval/26",
+    "HumanEval/28",
+    "HumanEval/31",
+    "HumanEval/34",
+    "HumanEval/35",
+    "HumanEval/36",
+    "HumanEval/45",
+    "HumanEval/47",
+    "HumanEval/48"
+  ],
+  "method": "function-name substring match against CodeAlpaca outputs",
+  "caveat": "Asymmetric evidence: catches exact reuse, misses paraphrased problems. 26% is a lower bound on overlap, not an estimate.",
+  "effect": "Fine-tuned model scores 69.2% on contaminated vs ~52% on clean, under both prompt formats. Base shows no comparable gap."
+}

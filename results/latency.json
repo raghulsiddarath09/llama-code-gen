@@ -1,0 +1,21 @@
+{
+  "runs": 30,
+  "steady_state_n": 24,
+  "hardware": "Tesla T4, 4-bit NF4, greedy decoding, batch 1",
+  "steady_state": {
+    "ms_per_token_mean": 103.0,
+    "ms_per_token_p50": 96.9,
+    "ms_per_token_p95": 136.3,
+    "tokens_per_sec": 9.7,
+    "total_ms_p50": 5226,
+    "total_ms_p95": 8625
+  },
+  "including_warmup": {
+    "ms_per_token_mean": 129.5,
+    "tokens_per_sec": 7.7,
+    "total_ms_p95": 12440,
+    "total_ms_p99": 16970
+  },
+  "warmup_note": "First 6 measured runs averaged ~236 ms/token before settling to ~103. Three pre-measurement warmup calls were insufficient for CUDA kernel compilation and GPU clock ramp.",
+  "caveat": "Free-tier Colab T4. Mild upward drift in the final 8 runs (139, 162 ms/tok) consistent with thermal throttling. Not production numbers."
+}

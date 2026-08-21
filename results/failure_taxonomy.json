@@ -1,0 +1,25 @@
+{
+  "eval_set": "custom 40-question set, fine-tuned model, signature specified",
+  "total_failures": 4,
+  "categories": {
+    "repetition_truncation": {
+      "count": 1,
+      "example": "is_palindrome \u2014 stuck emitting .replace() calls, hit token cap before returning"
+    },
+    "missing_helper": {
+      "count": 1,
+      "example": "merge_sort \u2014 correct recursion, calls merge() which it never defines"
+    },
+    "inplace_vs_return": {
+      "count": 1,
+      "example": "selection_sort \u2014 correct in-place sort, returns None; test expects a returned list"
+    },
+    "spec_ambiguity": {
+      "count": 1,
+      "example": "squares(n) \u2014 yielded 1..n instead of 0..n-1; 'first n squares' is ambiguous"
+    }
+  },
+  "genuine_model_errors": 2,
+  "harness_ambiguity": 2,
+  "note": "2 of 4 stem from underspecified instructions rather than model error, putting the arguable ceiling at 38/40."
+}

@@ -1,0 +1,20 @@
+{
+  "gpu": "Tesla T4, 15.64 GB",
+  "method": "each configuration measured in a fresh process; max_memory_reserved is a process-lifetime high-water mark and does not reset between configs in the same runtime",
+  "full_ft_bf16_batch1": {
+    "status": "OOM",
+    "peak_gb": 15.48,
+    "detail": "failed to allocate 48 MB with 11.81 MiB free"
+  },
+  "lora_bf16_batch4": {
+    "status": "fit",
+    "peak_gb": 14.33,
+    "detail": "92% utilization, 1.3 GB headroom"
+  },
+  "qlora_4bit_batch4": {
+    "status": "fit",
+    "peak_gb": 4.17,
+    "detail": "measured during rank sweep"
+  },
+  "finding": "Quantization contributed a 3.4x reduction on top of LoRA (14.33 -> 4.17 GB) with LoRA config and batch size held constant. LoRA alone technically fit but at 92% utilization with no room for batch size or sequence length increases."
+}

@@ -1,0 +1,32 @@
+{
+  "n": 50,
+  "contaminated": 13,
+  "clean": 37,
+  "alpaca": {
+    "base_all": 19,
+    "ft_all": 28,
+    "base_clean": 15,
+    "ft_clean": 19,
+    "base_contam": 4,
+    "ft_contam": 9
+  },
+  "raw": {
+    "base_all": 23,
+    "ft_all": 29,
+    "base_clean": 15,
+    "ft_clean": 20,
+    "base_contam": 8,
+    "ft_contam": 9
+  },
+  "headline_clean_raw": {
+    "base": 40.5,
+    "ft": 54.1,
+    "delta_pts": 13.6
+  },
+  "findings": [
+    "Model is NOT format-brittle: raw completion slightly outperforms alpaca wrapper",
+    "FT scores 69.2% on contaminated vs ~52% clean under both formats \u2014 memorization signal",
+    "Base scores identical 40.5% clean under both formats \u2014 stable baseline",
+    "Initial raw run returned 0%; cause was .strip() destroying body indentation, not model failure"
+  ]
+}

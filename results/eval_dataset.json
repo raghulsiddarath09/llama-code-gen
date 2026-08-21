@@ -1,0 +1,202 @@
+[
+  {
+    "instruction": "Write a function to reverse a string",
+    "reference": "def reverse_string(s):\n    return s[::-1]",
+    "test": "assert reverse_string('hello') == 'olleh'"
+  },
+  {
+    "instruction": "Write a function to check if a string is a palindrome",
+    "reference": "def is_palindrome(s):\n    return s == s[::-1]",
+    "test": "assert is_palindrome('racecar') and not is_palindrome('hello')"
+  },
+  {
+    "instruction": "Write a function to count vowels in a string",
+    "reference": "def count_vowels(s):\n    return sum(1 for c in s.lower() if c in 'aeiou')",
+    "test": "assert count_vowels('hello world') == 3"
+  },
+  {
+    "instruction": "Write a function to capitalize the first letter of each word in a string",
+    "reference": "def capitalize_words(s):\n    return ' '.join(w.capitalize() for w in s.split())",
+    "test": "assert capitalize_words('hello world') == 'Hello World'"
+  },
+  {
+    "instruction": "Write a function to remove all duplicate characters from a string, preserving order",
+    "reference": "def remove_duplicates(s):\n    seen = set()\n    return ''.join(c for c in s if not (c in seen or seen.add(c)))",
+    "test": "assert remove_duplicates('aabbcc') == 'abc'"
+  },
+  {
+    "instruction": "Write a function to count word frequency in a string and return a dictionary",
+    "reference": "def word_frequency(s):\n    freq = {}\n    for w in s.split():\n        freq[w] = freq.get(w, 0) + 1\n    return freq",
+    "test": "assert word_frequency('a b a') == {'a': 2, 'b': 1}"
+  },
+  {
+    "instruction": "Write a function that returns the longest word in a sentence",
+    "reference": "def longest_word(s):\n    return max(s.split(), key=len)",
+    "test": "assert longest_word('the quick brown') == 'quick'"
+  },
+  {
+    "instruction": "Write a function to check if two strings are anagrams",
+    "reference": "def is_anagram(a, b):\n    return sorted(a) == sorted(b)",
+    "test": "assert is_anagram('listen', 'silent') and not is_anagram('abc', 'abd')"
+  },
+  {
+    "instruction": "Write a function to find the maximum element in a list",
+    "reference": "def find_max(lst):\n    return max(lst)",
+    "test": "assert find_max([3, 7, 2]) == 7"
+  },
+  {
+    "instruction": "Write a function that returns the second largest number in a list",
+    "reference": "def second_largest(lst):\n    return sorted(set(lst))[-2]",
+    "test": "assert second_largest([3, 7, 2, 7]) == 3"
+  },
+  {
+    "instruction": "Write a function to flatten a nested list",
+    "reference": "def flatten(lst):\n    out = []\n    for x in lst:\n        if isinstance(x, list):\n            out.extend(flatten(x))\n        else:\n            out.append(x)\n    return out",
+    "test": "assert flatten([1, [2, [3]], 4]) == [1, 2, 3, 4]"
+  },
+  {
+    "instruction": "Write a function to remove duplicates from a list while preserving order",
+    "reference": "def dedupe(lst):\n    seen = set()\n    return [x for x in lst if not (x in seen or seen.add(x))]",
+    "test": "assert dedupe([1, 2, 1, 3]) == [1, 2, 3]"
+  },
+  {
+    "instruction": "Write a function that returns the intersection of two lists",
+    "reference": "def intersection(a, b):\n    return [x for x in a if x in b]",
+    "test": "assert sorted(intersection([1,2,3], [2,3,4])) == [2, 3]"
+  },
+  {
+    "instruction": "Write a function to rotate a list to the right by k positions",
+    "reference": "def rotate(lst, k):\n    k = k % len(lst)\n    return lst[-k:] + lst[:-k]",
+    "test": "assert rotate([1,2,3,4,5], 2) == [4,5,1,2,3]"
+  },
+  {
+    "instruction": "Write a function to split a list into chunks of size n",
+    "reference": "def chunk(lst, n):\n    return [lst[i:i+n] for i in range(0, len(lst), n)]",
+    "test": "assert chunk([1,2,3,4,5], 2) == [[1,2],[3,4],[5]]"
+  },
+  {
+    "instruction": "Write a function that returns the sum of all even numbers in a list",
+    "reference": "def sum_even(lst):\n    return sum(x for x in lst if x % 2 == 0)",
+    "test": "assert sum_even([1,2,3,4]) == 6"
+  },
+  {
+    "instruction": "Write a function to check if a number is prime",
+    "reference": "def is_prime(n):\n    if n < 2:\n        return False\n    for i in range(2, int(n**0.5) + 1):\n        if n % i == 0:\n            return False\n    return True",
+    "test": "assert is_prime(7) and not is_prime(9)"
+  },
+  {
+    "instruction": "Write a function to compute the factorial of a number",
+    "reference": "def factorial(n):\n    if n == 0:\n        return 1\n    return n * factorial(n - 1)",
+    "test": "assert factorial(5) == 120"
+  },
+  {
+    "instruction": "Write a function to compute the nth Fibonacci number",
+    "reference": "def fib(n):\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a",
+    "test": "assert fib(10) == 55"
+  },
+  {
+    "instruction": "Write a function to compute the greatest common divisor of two numbers",
+    "reference": "def gcd(a, b):\n    while b:\n        a, b = b, a % b\n    return a",
+    "test": "assert gcd(48, 18) == 6"
+  },
+  {
+    "instruction": "Write a function to convert a decimal number to binary as a string",
+    "reference": "def to_binary(n):\n    return bin(n)[2:]",
+    "test": "assert to_binary(10) == '1010'"
+  },
+  {
+    "instruction": "Write a function that returns the sum of digits of an integer",
+    "reference": "def digit_sum(n):\n    return sum(int(d) for d in str(abs(n)))",
+    "test": "assert digit_sum(1234) == 10"
+  },
+  {
+    "instruction": "Write a function to check if a number is a perfect square",
+    "reference": "def is_perfect_square(n):\n    if n < 0:\n        return False\n    r = int(n**0.5)\n    return r*r == n",
+    "test": "assert is_perfect_square(16) and not is_perfect_square(15)"
+  },
+  {
+    "instruction": "Write a function that returns all prime numbers up to n",
+    "reference": "def primes_up_to(n):\n    return [x for x in range(2, n+1) if all(x % d for d in range(2, int(x**0.5)+1))]",
+    "test": "assert primes_up_to(10) == [2, 3, 5, 7]"
+  },
+  {
+    "instruction": "Write a binary search function that returns the index of a target in a sorted list, or -1",
+    "reference": "def binary_search(arr, target):\n    lo, hi = 0, len(arr) - 1\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            lo = mid + 1\n        else:\n            hi = mid - 1\n    return -1",
+    "test": "assert binary_search([1,3,5,7], 5) == 2 and binary_search([1,3,5,7], 4) == -1"
+  },
+  {
+    "instruction": "Write a bubble sort function",
+    "reference": "def bubble_sort(arr):\n    a = list(arr)\n    for i in range(len(a)):\n        for j in range(len(a) - i - 1):\n            if a[j] > a[j+1]:\n                a[j], a[j+1] = a[j+1], a[j]\n    return a",
+    "test": "assert bubble_sort([3,1,2]) == [1,2,3]"
+  },
+  {
+    "instruction": "Write a merge sort function",
+    "reference": "def merge_sort(arr):\n    if len(arr) <= 1:\n        return arr\n    m = len(arr) // 2\n    L, R = merge_sort(arr[:m]), merge_sort(arr[m:])\n    out, i, j = [], 0, 0\n    while i < len(L) and j < len(R):\n        if L[i] <= R[j]:\n            out.append(L[i]); i += 1\n        else:\n            out.append(R[j]); j += 1\n    return out + L[i:] + R[j:]",
+    "test": "assert merge_sort([3,1,2]) == [1,2,3]"
+  },
+  {
+    "instruction": "Write a function to sort a list of tuples by the second element",
+    "reference": "def sort_by_second(lst):\n    return sorted(lst, key=lambda x: x[1])",
+    "test": "assert sort_by_second([(1,3),(2,1)]) == [(2,1),(1,3)]"
+  },
+  {
+    "instruction": "Write a function that finds the index of the first occurrence of a value in a list, or -1",
+    "reference": "def find_index(lst, val):\n    for i, x in enumerate(lst):\n        if x == val:\n            return i\n    return -1",
+    "test": "assert find_index([1,2,3], 2) == 1 and find_index([1,2,3], 9) == -1"
+  },
+  {
+    "instruction": "Write a selection sort function",
+    "reference": "def selection_sort(arr):\n    a = list(arr)\n    for i in range(len(a)):\n        m = min(range(i, len(a)), key=lambda k: a[k])\n        a[i], a[m] = a[m], a[i]\n    return a",
+    "test": "assert selection_sort([3,1,2]) == [1,2,3]"
+  },
+  {
+    "instruction": "Write a function to merge two sorted lists into one sorted list",
+    "reference": "def merge_sorted(a, b):\n    out, i, j = [], 0, 0\n    while i < len(a) and j < len(b):\n        if a[i] <= b[j]:\n            out.append(a[i]); i += 1\n        else:\n            out.append(b[j]); j += 1\n    return out + a[i:] + b[j:]",
+    "test": "assert merge_sorted([1,3],[2,4]) == [1,2,3,4]"
+  },
+  {
+    "instruction": "Write a function to sort a dictionary by its values and return a list of keys",
+    "reference": "def sort_keys_by_value(d):\n    return sorted(d, key=d.get)",
+    "test": "assert sort_keys_by_value({'a':3,'b':1}) == ['b','a']"
+  },
+  {
+    "instruction": "Implement a Stack class with push, pop, and peek methods using a Python list",
+    "reference": "class Stack:\n    def __init__(self):\n        self.items = []\n    def push(self, x):\n        self.items.append(x)\n    def pop(self):\n        return self.items.pop()\n    def peek(self):\n        return self.items[-1]",
+    "test": "s = Stack(); s.push(1); s.push(2); assert s.pop() == 2 and s.peek() == 1"
+  },
+  {
+    "instruction": "Implement a Queue class with enqueue and dequeue methods",
+    "reference": "class Queue:\n    def __init__(self):\n        self.items = []\n    def enqueue(self, x):\n        self.items.append(x)\n    def dequeue(self):\n        return self.items.pop(0)",
+    "test": "q = Queue(); q.enqueue(1); q.enqueue(2); assert q.dequeue() == 1"
+  },
+  {
+    "instruction": "Write a function to merge two dictionaries, with the second overriding the first",
+    "reference": "def merge_dicts(a, b):\n    out = dict(a)\n    out.update(b)\n    return out",
+    "test": "assert merge_dicts({'a':1},{'a':2,'b':3}) == {'a':2,'b':3}"
+  },
+  {
+    "instruction": "Write a function to invert a dictionary, swapping keys and values",
+    "reference": "def invert_dict(d):\n    return {v: k for k, v in d.items()}",
+    "test": "assert invert_dict({'a':1}) == {1:'a'}"
+  },
+  {
+    "instruction": "Write a function that groups a list of words by their first letter into a dictionary",
+    "reference": "def group_by_first(words):\n    out = {}\n    for w in words:\n        out.setdefault(w[0], []).append(w)\n    return out",
+    "test": "assert group_by_first(['ant','bee','ape']) == {'a':['ant','ape'],'b':['bee']}"
+  },
+  {
+    "instruction": "Write a decorator that measures and prints a function's execution time",
+    "reference": "import time\n\ndef timeit(func):\n    def wrapper(*args, **kwargs):\n        start = time.time()\n        result = func(*args, **kwargs)\n        print(time.time() - start)\n        return result\n    return wrapper",
+    "test": "@timeit\ndef f(): return 42\nassert f() == 42"
+  },
+  {
+    "instruction": "Write a generator function that yields the first n squares",
+    "reference": "def squares(n):\n    for i in range(n):\n        yield i * i",
+    "test": "assert list(squares(4)) == [0,1,4,9]"
+  },
+  {
+    "instruction": "Write a function that counts occurrences of each element in a list and returns a dictionary",
+    "reference": "def count_elements(lst):\n    out = {}\n    for x in lst:\n        out[x] = out.get(x, 0) + 1\n    return out",
+    "test": "assert count_elements([1,1,2]) == {1:2, 2:1}"
+  }
+]
