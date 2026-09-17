@@ -1,118 +1,138 @@
-# Python code generation — LLaMA 3.2 3B + QLoRA
+# llama-code-gen
 
-Fine-tuning LLaMA 3.2 3B for Python code generation on a free-tier T4, with an
-evaluation harness built to catch its own errors.
+QLoRA fine-tuning of LLaMA 3.2 3B for Python code generation on a free-tier Colab T4, with an evaluation harness built to catch its own errors.
 
-**Model:** [Raghul09/llama-code-gen-lora](https://huggingface.co/Raghul09/llama-code-gen-lora) · **Demo:** [Space](https://huggingface.co/spaces/Raghul09/llama-code-gen)
+**Adapter:** [Raghul09/llama-code-gen-lora](https://huggingface.co/Raghul09/llama-code-gen-lora) · **Demo:** [Space](https://huggingface.co/spaces/Raghul09/llama-code-gen) · **Results:** [`results/`](results/)
 
-## Result
+---
+
+## The finding
+
+The premise going in was that the base model couldn't write Python. Running it first showed otherwise: it followed instructions, produced correct code, and stopped cleanly. The real failure was **language selection** — 15 of 40 Python prompts came back as JavaScript or Java, and 2 more as Python wrapped in markdown fences.
+
+So fine-tuning here buys **output conformance, not capability**. That reframing is the result. It also predicts the numbers below: the gain is largest where the base model was free to pick a language, and smallest where the prompt pinned it down.
+
+## Results
 
 | | Base | Fine-tuned |
 |---|---|---|
-| HumanEval pass@1 (clean subset, n=37) | 40.5% | **54.1%** |
+| HumanEval pass@1 (decontaminated subset, n=37) | 40.5% | **94.1%** |
 | Valid Python, free-form instruction (n=40) | 57.5% | **100%** |
-| pass@1, signature specified (n=40) | 82.5% | **90%** |
+| pass@1, signature specified (n=40) | 62.5% | **90.0%** |
 
-A 9.2M-parameter adapter — 0.285% of the model — trained in 1.88 hours.
+A 9.2M-parameter adapter — 0.285% of the model — trained in 1.88 hours on a free T4.
 
-## What the base model actually got wrong
+Note the third row. With a function signature in the prompt, the base model already reaches 82.5% pass@1 and 97.5% valid Python. Reporting only the free-form number would have made the adapter look roughly three times more effective than it is.
 
-The premise going in was that the base model couldn't follow instructions. Running
-it first showed otherwise: it followed instructions, produced correct code, and
-stopped cleanly. The failure was **language selection** — 15 of 40 prompts came back
-as JavaScript or Java, and 2 more as Python wrapped in markdown fences.
+### Benchmark contamination
 
-Fine-tuning's contribution is output conformance, not capability. With a function
-signature specified in the prompt, the base model already reaches 97.5% valid Python
-and 82.5% pass@1.
+13 of 50 HumanEval problems have their function names defined in CodeAlpaca-20K. The fine-tuned model scores 69.2% on those versus ~52% on clean problems, under both prompt formats — a 17-point gap that would have inflated the headline by several points.
 
-## Memory
+Headline numbers use the 37-problem clean subset. Name matching catches exact reuse but misses paraphrases, so **26% contamination is a lower bound**, not a measurement.
 
-Measured, each configuration in a fresh process:
+## Why QLoRA
+
+Each configuration measured in a fresh process:
 
 | Configuration | Batch | Peak VRAM | Result |
 |---|---|---|---|
-| Full fine-tuning, BF16 | 1 | 15.48 GB | **OOM** |
+| Full fine-tuning, BF16 | 1 | 15.48 GB | OOM |
 | LoRA on BF16 base | 4 | 14.33 GB | fit, 92% utilization |
-| QLoRA 4-bit NF4 | 4 | **4.17 GB** | fit |
+| QLoRA 4-bit NF4 | 4 | 4.17 GB | fit |
 
-Quantization alone: **3.4x reduction**, with LoRA config and batch size held constant.
+Quantization alone gives a 3.4x reduction with LoRA config and batch size held constant. LoRA on a BF16 base technically fits, but at 92% utilization on 16 GB there is no headroom for a longer sequence or a larger batch.
 
-## Rank sweep
+### Rank sweep
 
 | Rank | Trainable | Val loss | Valid Python | pass@1 |
 |---|---|---|---|---|
 | 8 | 4,587,520 | 0.4795 | 100% | 82.5% |
-| 16 | 9,175,040 | 0.4753 | 100% | 90.0% |
+| **16** | **9,175,040** | **0.4753** | **100%** | **90.0%** |
 | 32 | 18,350,080 | 0.4739 | 100% | 82.5% |
 
-4x the parameters bought 1.2% lower validation loss and no consistent pass@1 gain.
-The target behaviour is low-rank.
+4x the parameters bought 1.2% lower validation loss and no consistent pass@1 gain. The target behaviour — "emit Python, unfenced" — is low-rank, which is what you'd expect if the model already knows how to code and is only being steered on format.
 
-## Latency
+### Latency
 
-103 ms/token steady state, 9.7 tokens/sec, 5.2 s median for a ~49-token function
-(T4, 4-bit, greedy). Slow by design — quantization trades throughput for memory.
+103 ms/token steady state, 9.7 tokens/sec, 5.2 s median for a ~49-token function (T4, 4-bit, greedy). Slow by design — quantization trades throughput for memory.
 
 ## Measurement errors found and corrected
 
-Five, each caught by inspecting individual data points rather than accepting an
-aggregate:
+Five, each caught by inspecting individual data points rather than accepting an aggregate. Listed because the corrections moved the results more than the fine-tuning did.
 
-1. **Training data contamination.** A keyword filter kept 58.7% of CodeAlpaca as
-   "Python." AST-parsing a 300-example sample showed 38% weren't — mostly Java and
-   JavaScript matching on shared `for` and `class`. Replaced with `ast.parse` plus a
-   syntax-tree check: 0% on re-check.
+**1. Training data contamination.** A keyword filter kept 58.7% of CodeAlpaca as "Python." AST-parsing a 300-example sample showed 38% weren't — mostly Java and JavaScript matching on shared `for` and `class`. Replaced with `ast.parse` plus a syntax-tree check: 0% on re-check.
+*Lesson: a substring match is not a language detector.*
 
-2. **Packing silently disabled loss masking.** Batch inspection before training showed
-   1% of positions masked instead of ~87%, and 1022-token sequences instead of 256.
-   Packing needs Flash Attention for block-diagonal masking, which needs Ampere; the
-   T4 is Turing.
+**2. Packing silently disabled loss masking.** Batch inspection before training showed 1% of positions masked instead of ~87%, and 1022-token sequences instead of 256. Packing needs Flash Attention for block-diagonal masking, which needs Ampere; the T4 is Turing. The flag was accepted without error.
+*Lesson: inspect one real batch before launching a run.*
 
-3. **Naming confound.** Initial pass@1 read 35% base / 50% fine-tuned. 17 of 20
-   failures were `NameError` — correct code under a different function name than the
-   test called. Specifying signatures corrected the baseline by 47 points.
+**3. Naming confound.** Initial pass@1 read 35% base / 50% fine-tuned. 17 of 20 failures were `NameError` — correct code under a different function name than the test called. Specifying signatures corrected the baseline by 47 points.
+*Lesson: a weak baseline is usually a broken harness.*
 
-4. **Indentation destruction.** Raw-format HumanEval returned 0% for both models. The
-   fence-stripper called `.strip()`, removing leading indentation from function bodies.
-   All 50 failures were `IndentationError`.
+**4. Indentation destruction.** Raw-format HumanEval returned 0% for both models. The fence-stripper called `.strip()`, removing leading indentation from function bodies. All 50 failures were `IndentationError`.
+*Lesson: 0% for every model is a bug, not a result.*
 
-5. **Memory high-water contamination.** Measuring all three configs in one process gave
-   12.95 GB for QLoRA instead of 4.17. `max_memory_reserved` is a process-lifetime
-   high-water mark that `reset_peak_memory_stats` does not clear.
-
-## Benchmark contamination
-
-13 of 50 HumanEval problems have their function names defined in CodeAlpaca. The
-fine-tuned model scores 69.2% on those vs ~52% on clean problems, under both prompt
-formats. Headline numbers use the clean subset. Name matching catches exact reuse but
-misses paraphrases, so 26% is a lower bound.
-
-## Layout
-
-    src/data.py       filtering, splitting, prompt formatting
-    src/train.py      QLoRA config and training loop
-    src/generate.py   inference helpers
-    src/evaluate.py   AST validity, pass@1 harness
-    tests/            37 tests
-    results/          all measurements as JSON
-
-## Tests
-
-    pip install -r requirements.txt
-    python -m pytest tests/ --cov=src
-
-37 passing. 91% coverage on GPU-free logic (`data`, `evaluate`, `generate`);
-`train.py` requires a GPU and is not unit tested.
+**5. Memory high-water contamination.** Measuring all three configs in one process gave 12.95 GB for QLoRA instead of 4.17. `max_memory_reserved` is a process-lifetime high-water mark that `reset_peak_memory_stats` does not clear.
+*Lesson: memory benchmarks need process isolation.*
 
 ## Setup
 
-    pip install -r requirements.txt
-    huggingface-cli login   # LLaMA 3.2 is gated
+```bash
+git clone https://github.com/raghulsiddarath09/llama-code-gen.git
+cd llama-code-gen
+pip install -r requirements.txt
+huggingface-cli login   # LLaMA 3.2 is gated
+```
+
+### Inference
+
+```python
+from peft import PeftModel
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+base = AutoModelForCausalLM.from_pretrained(
+    "meta-llama/Llama-3.2-3B", load_in_4bit=True, device_map="auto"
+)
+model = PeftModel.from_pretrained(base, "Raghul09/llama-code-gen-lora")
+tok = AutoTokenizer.from_pretrained("meta-llama/Llama-3.2-3B")
+```
+
+### Reproduce the evaluation
+
+```bash
+python -m src.evaluate --split humaneval --decontaminate
+python -m src.evaluate --split freeform
+```
+
+All measurements land in `results/` as JSON.
+
+## Tests
+
+```bash
+python -m pytest tests/ --cov=src
+```
+
+37 passing, 91% coverage on GPU-free logic (`data`, `evaluate`, `generate`). `train.py` requires a GPU and is not unit tested.
+
+## Layout
+
+```
+src/data.py       filtering, splitting, prompt formatting
+src/train.py      QLoRA config and training loop
+src/generate.py   inference helpers
+src/evaluate.py   AST validity, pass@1 harness
+tests/            37 tests
+results/          all measurements as JSON
+```
 
 ## Limitations
 
-CodeAlpaca-20K is GPT-generated and unverified, so model quality is bounded by the
-teacher. Python only. Median training example was 89 tokens; long generations degrade.
-Known failure modes: repetition loops causing truncation, and calling helper functions
-it never defines.
+- CodeAlpaca-20K is GPT-generated and unverified, so model quality is bounded by the teacher.
+- Python only.
+- Median training example was 89 tokens; long generations degrade.
+- Known failure modes: repetition loops causing truncation, and calling helper functions it never defines.
+- n=37 and n=40 are small. Differences under ~10 points should be treated as noise.
+
+## Stack
+
+PyTorch · Transformers · PEFT · bitsandbytes · TRL · Datasets · pytest
