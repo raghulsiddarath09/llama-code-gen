@@ -10,7 +10,7 @@ QLoRA fine-tuning of LLaMA 3.2 3B for Python code generation on a free-tier Cola
 
 The premise going in was that the base model couldn't write Python. Running it first showed otherwise: it followed instructions, produced correct code, and stopped cleanly. The real failure was **language selection** — 15 of 40 Python prompts came back as JavaScript or Java, and 2 more as Python wrapped in markdown fences.
 
-So fine-tuning here buys **output conformance, not capability**. That reframing is the result. It also predicts the numbers below: the gain is largest where the base model was free to pick a language, and smallest where the prompt pinned it down.
+So fine-tuning here buys **output conformance, not capability**. That reframing is the result. The results show substantial gains across both unconstrained and signature-specified evaluations, with the largest pass@1 improvement on the decontaminated HumanEval subset.
 
 ## Results
 
@@ -50,11 +50,11 @@ Quantization alone gives a 3.4x reduction with LoRA config and batch size held c
 | **16** | **9,175,040** | **0.4753** | **100%** | **90.0%** |
 | 32 | 18,350,080 | 0.4739 | 100% | 82.5% |
 
-4x the parameters bought 1.2% lower validation loss and no consistent pass@1 gain. The target behaviour — "emit Python, unfenced" — is low-rank, which is what you'd expect if the model already knows how to code and is only being steered on format.
+Increasing rank from 8 to 32 increased the trainable parameter count 4× and reduced validation loss from 0.4795 to 0.4739, but did not produce a consistent pass@1 gain. The target behaviour — "emit Python, unfenced" — is low-rank, which is what you'd expect if the model already knows how to code and is only being steered on format.
 
 ### Latency
 
-103 ms/token steady state, 9.7 tokens/sec, 5.2 s median for a ~49-token function (T4, 4-bit, greedy). Slow by design — quantization trades throughput for memory.
+103 ms/token steady state, 9.7 tokens/sec, 5.2 s median for a ~49-token function (T4, 4-bit, greedy). The configuration prioritizes memory efficiency over throughput.
 
 ## Measurement errors found and corrected
 
@@ -66,7 +66,7 @@ Five, each caught by inspecting individual data points rather than accepting an 
 **2. Packing silently disabled loss masking.** Batch inspection before training showed 1% of positions masked instead of ~87%, and 1022-token sequences instead of 256. Packing needs Flash Attention for block-diagonal masking, which needs Ampere; the T4 is Turing. The flag was accepted without error.
 *Lesson: inspect one real batch before launching a run.*
 
-**3. Naming confound.** Initial pass@1 read 35% base / 50% fine-tuned. 17 of 20 failures were `NameError` — correct code under a different function name than the test called. Specifying signatures corrected the baseline by 47 points.
+**3. Naming confound.** Initial pass@1 read 35% base / 50% fine-tuned. Name mismatches caused `NameError` failures — correct code under a different function name than the test called. After fixing the naming mismatch, the signature-specified evaluation measured **52.0% base / 94.1% fine-tuned**.
 *Lesson: a weak baseline is usually a broken harness.*
 
 **4. Indentation destruction.** Raw-format HumanEval returned 0% for both models. The fence-stripper called `.strip()`, removing leading indentation from function bodies. All 50 failures were `IndentationError`.
