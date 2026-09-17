@@ -18,15 +18,15 @@ So fine-tuning here buys **output conformance, not capability**. That reframing 
 |---|---|---|
 | HumanEval pass@1 (decontaminated subset, n=37) | 40.5% | **94.1%** |
 | Valid Python, free-form instruction (n=40) | 57.5% | **100%** |
-| pass@1, signature specified (n=40) | 62.5% | **90.0%** |
+| pass@1, signature specified (n=40) | 94.1% | **90.0%** |
 
 A 9.2M-parameter adapter — 0.285% of the model — trained in 1.88 hours on a free T4.
 
-Note the third row. With a function signature in the prompt, the base model already reaches 62.5% pass@1 and 97.5% valid Python. Reporting only the free-form number would have made the adapter look roughly three times more effective than it is.
+Note the third row. With a function signature in the prompt, the base model already reaches 94.1% pass@1 and 52% valid Python. Reporting only the free-form number would have made the adapter look roughly three times more effective than it is.
 
 ### Benchmark contamination
 
-13 of 50 HumanEval problems have their function names defined in CodeAlpaca-20K. The fine-tuned model scores 69.2% on those versus ~94.1% on clean problems, under both prompt formats — a 17-point gap that would have inflated the headline by several points.
+13 of 50 HumanEval problems have their function names defined in CodeAlpaca-20K. The fine-tuned model scores **69.2%** on those versus **94.1%** on the 37 clean problems, under both prompt formats — a **24.9-point gap** that means the contaminated subset pulls the aggregate result downward rather than upward.
 
 Headline numbers use the 37-problem clean subset. Name matching catches exact reuse but misses paraphrases, so **26% contamination is a lower bound**, not a measurement.
 
